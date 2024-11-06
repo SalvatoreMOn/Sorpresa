@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compleanno Deny</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+    <style>
+        /* Stili generali per la pagina */
+        body, html {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Dancing Script', cursive;
+        }
+
+        /* Sfondo sfocato */
+        .blur-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('sfondo.jpg'); /* Percorso dell'immagine di sfondo */
+            background-size: cover;
+            background-position: center;
+            filter: blur(10px);
+            z-index: -1; /* Dietro agli altri elementi */
+        }
+
+        .container {
+            text-align: center;
+            color: #333;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        /* Stili per il countdown */
+        .countdown {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .countdown div {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            padding: 20px 15px;
+            text-align: center;
+            min-width: 80px;
+            color: #333;
+        }
+
+        .countdown div span {
+            display: block;
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .countdown div small {
+            font-size: 0.9em;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        /* Stili per le polaroid */
+        .polaroid {
+            position: absolute;
+            width: 120px; /* Dimensione aumentata delle polaroid */
+            height: auto;
+            border: 5px solid white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            opacity: 0.8;
+            animation: float 3s ease-in-out infinite alternate; /* Animazione oscillante */
+            transform: rotate(calc(10deg * var(--rotation)));
+        }
+
+        /* Animazione oscillante per le polaroid */
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(calc(10deg * var(--rotation)));
+            }
+            100% {
+                transform: translateY(-10px) rotate(calc(10deg * var(--rotation)));
+            }
+        }
+
+        /* Stili per il player di Spotify */
+        .spotify-player {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 300px;
+            height: 120px;
+            z-index: 10;
+        }
+
+        /* Stili per l'immagine e la nuvoletta */
+        .me {
+            position: absolute;
+            bottom: 20px; /* Posizionamento dell'immagine */
+            left: 20px; /* Spazio a sinistra */
+            width: 200px; /* Dimensione dell'immagine aumentata */
+            z-index: 10;
+        }
+
+        .speech-bubble {
+            position: absolute;
+            bottom: 150px; /* Posizionamento della nuvoletta */
+            left: 150px; /* Spostamento della nuvoletta più a destra */
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+            width: 220px; /* Larghezza della nuvoletta */
+        }
+
+        .speech-bubble p {
+            margin: 0;
+            font-size: 14px; /* Dimensione del testo */
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="blur-background"></div> <!-- Sfondo sfocato -->
+    
+    <div class="container">
+        <h1>Compleanno Deny</h1>
+        <div class="countdown" id="countdown">
+            <div>
+                <span id="days">0</span>
+                <small>Days</small>
+            </div>
+            <div>
+                <span id="hours">0</span>
+                <small>Hours</small>
+            </div>
+            <div>
+                <span id="minutes">0</span>
+                <small>Minutes</small>
+            </div>
+            <div>
+                <span id="seconds">0</span>
+                <small>Seconds</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Player musicale di Spotify -->
+    <iframe class="spotify-player" src="https://open.spotify.com/embed/album/1tWETedRkUYLEIFTYdRmmU" width="300" height="120" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+
+    <!-- Immagine di te stesso -->
+    <img src="me.png" alt="Me" class="me"> <!-- Percorso della tua immagine -->
+
+    <!-- Nuvoletta con le frasi -->
+    <div class="speech-bubble" id="speechBubble">
+        <p id="phrase">Spero che tu abbia una giornata fantastica!</p>
+    </div>
+
+    <script>
+        // JavaScript per il countdown
+        const birthday = new Date("2024-11-09T00:00:00");
+        let phraseInterval;
+
+        function updateCountdown() {
+            const now = new Date();
+            const distance = birthday - now;
+
+            if (distance > 0) {
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById("days").textContent = days;
+                document.getElementById("hours").textContent = hours;
+                document.getElementById("minutes").textContent = minutes;
+                document.getElementById("seconds").textContent = seconds;
+            } else {
+                clearInterval(timer);
+                clearInterval(phraseInterval);
+                document.getElementById("countdown").innerHTML = "<h2>Buon Compleanno, Deny! 🎉💖</h2>";
+                document.getElementById("phrase").textContent = "Spero che tu abbia una giornata fantastica!";
+            }
+        }
+
+        // Funzione per cambiare le frasi ogni 20 secondi
+        function changePhrase() {
+            const phrases = [
+                "Sei una persona speciale e ti voglio bene!",
+                "Non vedo l'ora di festeggiare insieme a te!",
+                "Hai portato tanta gioia nella mia vita!",
+            ];
+            const phraseIndex = Math.floor(Date.now() / 1000 / 20) % phrases.length;
+            document.getElementById("phrase").textContent = phrases[phraseIndex];
+        }
+
+        // Funzione per creare le polaroid in posizioni più distanziate
+        function createPolaroids() {
+            const polaroidPositions = [
+                { top: 50, left: 150 },
+                { top: 150, left: 500 },
+                { top: 200, left: 850 },
+                { top: 300, left: 250 },
+                { top: 400, left: 700 },
+                { top: 150, left: 1100 },
+                { top: 350, left: 1300 },
+                { top: 450, left: 400 },
+                { top: 500, left: 900 },
+                { top: 250, left: 1500 }
+            ];
+
+            for (let i = 0; i < polaroidPositions.length; i++) {
+                const polaroid = document.createElement('img');
+                polaroid.src = `polaroid${i + 1}.png`; // Percorso dell'immagine
+                polaroid.className = 'polaroid';
+                polaroid.style.setProperty('--rotation', Math.random() * 2 - 1);
+                
+                // Posiziona la polaroid in base alla posizione fissa
+                polaroid.style.top = `${polaroidPositions[i].top}px`;
+                polaroid.style.left = `${polaroidPositions[i].left}px`;
+                
+                document.body.appendChild(polaroid);
+            }
+        }
+
+        // Inizializzazione
+        createPolaroids();
+        const timer = setInterval(updateCountdown, 1000);
+        phraseInterval = setInterval(changePhrase, 20000); // Cambia frase ogni 20 secondi
+        changePhrase(); // Imposta la frase iniziale
+    </script>
+</body>
+</html>
+
